@@ -10,6 +10,6 @@ COPY key.pub /home/mouaad/.ssh/authorized_keys
 RUN chmod 600 /home/mouaad/.ssh/authorized_keys && \
     chown mouaad:mouaad /home/mouaad/.ssh/authorized_keys
 COPY entrypoint.sh /
-RUN apk add --update --no-cache mysql-client
+RUN apk add --upgrade --no-cache aws-cli
 ENTRYPOINT ["/entrypoint.sh"]
 EXPOSE 22
