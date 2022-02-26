@@ -11,5 +11,6 @@ RUN chmod 600 /home/mouaad/.ssh/authorized_keys && \
     chown mouaad:mouaad /home/mouaad/.ssh/authorized_keys
 COPY entrypoint.sh /
 RUN apk add --update --no-cache mysql-client
+RUN apk add --update --no-cache python3
 ENTRYPOINT ["/entrypoint.sh"]
 EXPOSE 22
