@@ -1,0 +1,29 @@
+FROM alpine:latest
+LABEL maintainer="Mouaad"
+ENV NEWUSER="mouaad"
+ENV NEWPASS="123AZE123"
+ENV PathToSecretKey="key.pub"
+
+# ADDING SSH SERVER (openssh) AND CONFIGURE IT 
+RUN apk add --update --no-cache openssh
+RUN echo 'PasswordAuthentication yes' >> /etc/ssh/sshd_config
+RUN echo 'PubkeyAuthentication yes' >> /etc/ssh/sshd_config
+RUN echo 'PubkeyAcceptedAlgorithms=+ssh-rsa' >> /etc/ssh/sshd_config
+
+# ADDING NEW USER AND CONFIGURING IT
+RUN apk add sudo
+RUN adduser -h /home/$NEWUSER -s /bin/sh -D $NEWUSER
+RUN echo -n "$NEWUSER:$NEWPASS" | chpasswd
+COPY $PathToSecretKey /home/$NEWUSER/.ssh/authorized_keys
+RUN chmod 600 /home/$NEWUSER/.ssh/authorized_keys
+RUN chown $NEWUSER:$NEWUSER /home/$NEWUSER/.ssh/authorized_keys
+RUN echo "$NEWUSER ALL=(ALL) ALL" > /etc/sudoers.d/$NEWUSER && chmod 0440 /etc/sudoers.d/$NEWUSER
+
+# ADDING PYTHON PACKAGE FOR ANSIBLE
+RUN apk add python3 
+RUN ln -sf python3 /usr/bin/python
+
+# ENTRYPOINT
+EXPOSE 22
+COPY entrypoint.sh /
+ENTRYPOINT ["/entrypoint.sh"]
