@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  shared-folder:
+    image: mouadmem16/openssh-alpine:v0.1-python
+    restart: always
+    privileged: true
+    cap_add:
+     - SYS_ADMIN
+    environment:
+     SHARE: "shared;/share;yes;no;yes"
+     PERMISSIONS: "true"
+     SHAREDFOLDER: '\\10.0.0.1\sharedfolder'
+     LOCALPATH: "/share"
+     MOUNT_PASS: "user_domain_password"
+     MOUNT_USER: "user_domain_username"
+     MOUNT_DOMAIN: "domain_name"
+
