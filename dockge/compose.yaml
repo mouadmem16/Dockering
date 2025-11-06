@@ -2,13 +2,23 @@ services:
   dockge:
     image: louislam/dockge:1
     restart: unless-stopped
-    ports:
-      - 5001:5001
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /mnt/data/app-data/dockge:/app/data
+      - docker_appdata:/app/data
       - /mnt/data/Dockering:/mnt/data/Dockering
     environment:
-      # Tell Dockge where to find the stacks
       - DOCKGE_STACKS_DIR=/mnt/data/Dockering
-networks: {}
+    networks:
+      - public_network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.docker.rule=Host(`docker.mouaad-ops.me`)
+      - traefik.http.routers.docker.entrypoints=web
+      - traefik.http.routers.docker.service=docker-web-svc
+      - traefik.http.services.docker-web-svc.loadbalancer.server.port=5001
+networks:
+  public_network:
+    external: true
+volumes:
+  docker_appdata:
+    driver: local

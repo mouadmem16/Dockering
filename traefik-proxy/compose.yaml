@@ -1,0 +1,23 @@
+services:
+  traefik:
+    image: traefik:v3.5
+    container_name: traefik-proxy
+    command: --api.insecure=ture --providers.docker
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config/traefik.yaml:/etc/traefik/traefik.yaml:ro
+    restart: unless-stopped
+    networks:
+      - public_network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.traffic.rule=Host(`traffic.mouaad-ops.me`)
+      - traefik.http.routers.traffic.entrypoints=web
+      - traefik.http.routers.traffic.service=traffic-web-svc
+      - traefik.http.services.traffic-web-svc.loadbalancer.server.port=8080
+networks:
+  public_network:
+    external: true

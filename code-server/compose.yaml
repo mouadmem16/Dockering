@@ -1,0 +1,32 @@
+---
+services:
+  code-server:
+    image: linuxserver/code-server:4.105.1
+    container_name: code-server
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=africa/casablanca
+      # - PASSWORD=password 
+      # - HASHED_PASSWORD= 
+      - SUDO_PASSWORD=${CODE_PASS} 
+      # - SUDO_PASSWORD_HASH= 
+      # - PROXY_DOMAIN=code-server.my.domain
+      - DEFAULT_WORKSPACE=/data
+      - PWA_APPNAME=code-server
+    volumes:
+      - /mnt/data/Dockering:/data
+      - /mnt/data/code-server:/config
+      - ./gitconfig:/config/.gitconfig:ro
+    restart: unless-stopped
+    networks:
+      - public_network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.code.rule=Host(`code.mouaad-ops.me`)
+      - traefik.http.routers.code.entrypoints=web
+      - traefik.http.routers.code.service=code-web-svc
+      - traefik.http.services.code-web-svc.loadbalancer.server.port=8443
+networks:
+  public_network:
+    external: true
